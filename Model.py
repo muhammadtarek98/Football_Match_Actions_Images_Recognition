@@ -23,7 +23,7 @@ class Model(torch.nn.Module):
         self.mlp_block=MLP(in_features=self.out_channels,out_features=self.out_channels//2)
         self.mlp_block_2=MLP(in_features=self.out_channels//2,out_features=self.out_channels//4)
         self.fc=torch.nn.Linear(in_features=self.out_channels//4,out_features=num_classes)
-        self.act=torch.nn.Softmax(dim=1)
+        #self.act=torch.nn.Softmax(dim=1)
     def forward(self,x:torch.Tensor)->torch.Tensor:
         features=self.feature_extractor(x)
         flatten_feature_map=self.flatten(features)
@@ -31,7 +31,7 @@ class Model(torch.nn.Module):
         feature_vector=self.mlp_block(flatten_feature_map)
         feature_vector=self.mlp_block_2(feature_vector)
         feature_vector=self.fc(feature_vector)
-        return self.act(feature_vector)
+        return feature_vector
 """
 x=torch.randn(size=(3,3,244,244))
 model=Model(num_classes=3)

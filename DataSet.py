@@ -23,15 +23,10 @@ class FootBallDataSet(torch.utils.data.Dataset):
                 break
         if self.transforms:
             img=self.transforms(image=img)["image"]
-        return dict(image=img,label=torch.tensor(data=[label],dtype=torch.float32))
-transforms=A.Compose(
-    transforms=[
-        A.Normalize(mean=[0.0,0.0,0.0],std=[1.0,1.0,1.0],p=1.0,normalization="min_max_per_channel"),
-        A.Resize(height=224,width=224,p=1.0),
-        A.pytorch.ToTensorV2()
-    ]
-)
+        return dict(image=img,label=torch.tensor(data=[label],dtype=torch.long))
 """
+
+
 dataset=FootBallDataSet(images_dir="/home/muhammad/Downloads/football_match_dataset",transforms=transforms)
 train_set_length=int(len(dataset)*0.8)
 val_set_length=int(len(dataset)-train_set_length)

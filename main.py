@@ -1,12 +1,11 @@
-import os
-import torch
+import os, torch
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
-
-from DataSet import FootBallDataSet, transforms
+from DataSet import FootBallDataSet
 from Model import Model
 from PL_module import PLModule
+import albumentations as A
 
 # Constants
 DATA_DIR = "/home/muhammad/Downloads/football_match_dataset"
@@ -15,45 +14,20 @@ LEARNING_RATE = 1e-4
 MAX_EPOCHS = 20
 NUM_CLASSES = 3
 NUM_WORKERS = min(4, os.cpu_count() or 1)
-
-class TrainingModule(PLModule):
-    """
-    Subclassing PLModule to handle the loss function correctly.
-    The Model outputs Softmax probabilities, but PLModule uses CrossEntropyLoss (which expects logits).
-    We override common_computations to use NLLLoss with log-probabilities.
-    """
-    def __init__(self, model, lr):
-        super().__init__(model, lr)
-        self.loss_func = torch.nn.NLLLoss()
-
-    def common_computations(self, pred: torch.Tensor, labels: torch.Tensor) -> dict:
-        # pred comes from Model, which applies Softmax.
-        # NLLLoss expects log-probabilities.
-        log_pred = torch.log(pred + 1e-7) 
-        loss = self.loss_func(log_pred, labels)
-        
-        # Metrics
-        recall = self.recall(pred, labels)
-        accuracy = self.accuracy(pred, labels)
-        precision = self.precision(pred, labels)
-        f1_score = self.f1_score(pred, labels)
-        
-        return dict(loss=loss, recall=recall, accuracy=accuracy, precision=precision, f1_score=f1_score)
-
 def main():
     pl.seed_everything(42)
-
-    # 1. Prepare Dataset
     if not os.path.exists(DATA_DIR):
         print(f"Warning: Data directory {DATA_DIR} does not exist. Please check the path.")
-
+    transforms=A.Compose(
+        transforms=[
+            A.Normalize(mean=[0.0,0.0,0.0],std=[1.0,1.0,1.0],p=1.0,normalization="min_max_per_channel"),
+            A.Resize(height=224,width=224,p=1.0),
+            A.pytorch.ToTensorV2()
+        ]
+    )
     dataset = FootBallDataSet(images_dir=DATA_DIR, transforms=transforms)
-    
-    # 2. Split Dataset
     train_set_length = int(len(dataset) * 0.8)
     val_set_length = len(dataset) - train_set_length
-    
-    # Handle case where dataset might be empty if path is wrong
     if len(dataset) == 0:
         print("Dataset is empty. Exiting.")
         return
@@ -82,7 +56,7 @@ def main():
 
     # 4. Model & Lightning Module
     model = Model(num_classes=NUM_CLASSES)
-    pl_module = TrainingModule(model=model, lr=LEARNING_RATE)
+    pl_module = PLModule(model=model, lr=LEARNING_RATE)
 
     # 5. Callbacks
     checkpoint_callback = ModelCheckpoint(
@@ -105,7 +79,8 @@ def main():
         callbacks=[checkpoint_callback, early_stopping],
         accelerator="auto",
         devices="auto",
-        log_every_n_steps=10
+        log_every_n_steps=10,
+        fast_dev_run=1
     )
 
     # 7. Start Training
