@@ -23,7 +23,7 @@ class FootBallDataSet(torch.utils.data.Dataset):
                 break
         if self.transforms:
             img=self.transforms(image=img)["image"]
-        return dict(image=img,label=torch.tensor(data=[label],dtype=torch.long))
+        return dict(image=img,label=torch.tensor(data=label,dtype=torch.long))
 """
 
 
