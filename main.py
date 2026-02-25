@@ -80,7 +80,7 @@ def main():
         accelerator="auto",
         devices="auto",
         log_every_n_steps=10,
-        fast_dev_run=1
+        fast_dev_run=3
     )
 
     # 7. Start Training
