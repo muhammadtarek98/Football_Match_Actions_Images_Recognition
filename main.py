@@ -1,4 +1,4 @@
-import os, torch
+import os, torch,argparse
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
@@ -6,15 +6,7 @@ from DataSet import FootBallDataSet
 from Model import Model
 from PL_module import PLModule
 import albumentations as A
-
-# Constants
-DATA_DIR = "/home/muhammad/Downloads/football_match_dataset"
-BATCH_SIZE = 32
-LEARNING_RATE = 1e-4
-MAX_EPOCHS = 20
-NUM_CLASSES = 3
-NUM_WORKERS = min(4, os.cpu_count() or 1)
-def main():
+def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORKERS:int,NUM_CLASSES:int=3):
     pl.seed_everything(42)
     if not os.path.exists(DATA_DIR):
         print(f"Warning: Data directory {DATA_DIR} does not exist. Please check the path.")
@@ -80,11 +72,18 @@ def main():
         accelerator="auto",
         devices="auto",
         log_every_n_steps=10,
-        fast_dev_run=3
+        fast_dev_run=0
     )
 
     # 7. Start Training
     trainer.fit(pl_module, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
 if __name__ == "__main__":
-    main()
+    parser=argparse.ArgumentParser()
+    parser.add_argument("--lr",type=float,default=1e-4)
+    parser.add_argument("--epochs",type=int,default=20)
+    parser.add_argument("--bs",type=int,default=32)
+    parser.add_argument("--num_workers",type=int,default=4)
+    parser.add_argument("--data_dir",type=str,default=None,required=True)
+    args=parser.parse_args()
+    main(DATA_DIR=args.data_dir,BATCH_SIZE=args.bs,LEARNING_RATE=args.lr,MAX_EPOCHS=args.epochs,NUM_WORKERS= args.num_workers)
