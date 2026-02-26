@@ -23,7 +23,6 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
     if len(dataset) == 0:
         print("Dataset is empty. Exiting.")
         return
-
     train_dataset, val_dataset = random_split(
         dataset=dataset, 
         lengths=[train_set_length, val_set_length],
