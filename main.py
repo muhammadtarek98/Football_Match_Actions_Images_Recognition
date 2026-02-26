@@ -1,5 +1,6 @@
 import os, torch,argparse
 import pytorch_lightning as pl
+from pytorch_lightning.loggers import TensorBoardLogger
 from torch.utils.data import DataLoader, random_split
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from DataSet import FootBallDataSet
@@ -61,7 +62,7 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
     )
     
     early_stopping = EarlyStopping(
-        monitor='val/loss',
+        monitor='val/val_loss',
         patience=5,
         mode='min'
     )
