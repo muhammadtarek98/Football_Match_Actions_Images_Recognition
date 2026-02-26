@@ -24,16 +24,3 @@ class FootBallDataSet(torch.utils.data.Dataset):
         if self.transforms:
             img=self.transforms(image=img)["image"]
         return dict(image=img,label=torch.tensor(data=label,dtype=torch.long))
-"""
-
-
-dataset=FootBallDataSet(images_dir="/home/muhammad/Downloads/football_match_dataset",transforms=transforms)
-train_set_length=int(len(dataset)*0.8)
-val_set_length=int(len(dataset)-train_set_length)
-train_dataset,val_dataset=torch.utils.data.random_split(dataset=dataset,generator=torch.Generator().manual_seed(42),
-                                                        lengths=[train_set_length,val_set_length])
-train_loader=torch.utils.data.DataLoader(dataset=train_dataset,batch_size=32,shuffle=True)
-val_loader=torch.utils.data.DataLoader(dataset=val_dataset,batch_size=32,shuffle=False)
-for batch in val_loader:
-    print(batch)
-"""

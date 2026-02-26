@@ -32,8 +32,3 @@ class Model(torch.nn.Module):
         feature_vector=self.mlp_block_2(feature_vector)
         feature_vector=self.fc(feature_vector)
         return feature_vector
-"""
-x=torch.randn(size=(3,3,244,244))
-model=Model(num_classes=3)
-torchinfo.summary(model=model,input_data=x)
-"""
