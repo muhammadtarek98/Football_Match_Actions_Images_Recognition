@@ -33,8 +33,8 @@ class PLModule(pl.LightningModule):
     def training_step(self, batch, batch_idx: int, dataloader_idx: int = 0)->dict:
         images, labels = batch["image"], batch["label"]
         pred = self(images)
-        print(pred.shape)
         metrics=self.common_computations(pred,labels)
+        self.log(name="loss",value=metrics["loss"],prog_bar=True,on_step=True,on_epoch=True)
         for k,v in metrics.items():
             self.log(name=f"train/{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
         return metrics
