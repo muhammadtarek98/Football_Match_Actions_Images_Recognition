@@ -30,7 +30,6 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
         generator=torch.Generator().manual_seed(42)
     )
 
-    # 3. DataLoaders
     train_loader = DataLoader(
         train_dataset, 
         batch_size=BATCH_SIZE, 
@@ -46,11 +45,9 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
         pin_memory=True
     )
 
-    # 4. Model & Lightning Module
     model = Model(num_classes=NUM_CLASSES)
     pl_module = PLModule(model=model, lr=LEARNING_RATE)
 
-    # 5. Callbacks
     checkpoint_callback = ModelCheckpoint(
         monitor='val/loss',
         dirpath='checkpoints',
@@ -65,7 +62,6 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
         mode='min'
     )
 
-    # 6. Trainer
     trainer = pl.Trainer(
         max_epochs=MAX_EPOCHS,
         callbacks=[checkpoint_callback, early_stopping],
@@ -75,7 +71,6 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
         fast_dev_run=0
     )
 
-    # 7. Start Training
     trainer.fit(pl_module, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
 if __name__ == "__main__":
