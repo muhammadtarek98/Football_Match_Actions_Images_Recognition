@@ -52,6 +52,16 @@ class PLModule(pl.LightningModule):
         for k,v in metrics.items():
             self.log(name=f"val/{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
         return metrics
+    def predict_step(self, batch, batch_idx: int, dataloader_idx: int = 0):
+        images = batch["image"]
+        logits = self(images)
+        probabilities = torch.softmax(logits, dim=1)
+        predictions = torch.argmax(logits, dim=1)
+        return {
+            "logits": logits,
+            "probabilities": probabilities,
+            "predictions": predictions
+        }
     def configure_optimizers(self):
         optimizer=torch.optim.Adam(params=self.model.parameters(),lr=self.lr)
         lr_scheduler=torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer=optimizer,T_0=5)
