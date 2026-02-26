@@ -36,21 +36,21 @@ class PLModule(pl.LightningModule):
         metrics=self.common_computations(pred,labels)
         self.log(name="loss",value=metrics["loss"],prog_bar=True,on_step=True,on_epoch=True)
         for k,v in metrics.items():
-            self.log(name=f"train/{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
+            self.log(name=f"train/train_{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
         return metrics
     def validation_step(self, batch, batch_idx: int, dataloader_idx: int = 0)->dict:
         images, labels = batch["image"], batch["label"]
         pred = self(images)
         metrics=self.common_computations(pred,labels)
         for k,v in metrics.items():
-            self.log(name=f"val/{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
+            self.log(name=f"val/val_{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
         return metrics
     def test_step(self,  batch, batch_idx: int, dataloader_idx: int = 0) -> STEP_OUTPUT:
         images, labels = batch["image"], batch["label"]
         pred = self(images)
         metrics=self.common_computations(pred,labels)
         for k,v in metrics.items():
-            self.log(name=f"val/{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
+            self.log(name=f"test/test_{k}",value=v,prog_bar=True,on_step=True,on_epoch=True)
         return metrics
     def predict_step(self, batch, batch_idx: int, dataloader_idx: int = 0):
         images = batch["image"]

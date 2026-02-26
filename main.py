@@ -46,9 +46,14 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
 
     model = Model(num_classes=NUM_CLASSES)
     pl_module = PLModule(model=model, lr=LEARNING_RATE)
+    logger = TensorBoardLogger(
+        save_dir="lightning_logs",
+        name="football_actions",
+        default_hp_metric=False,
+    )
 
     checkpoint_callback = ModelCheckpoint(
-        monitor='val/loss',
+        monitor='val/val_loss',
         dirpath='checkpoints',
         filename='football-action-{epoch:02d}-{val_loss:.2f}',
         save_top_k=3,
@@ -66,6 +71,7 @@ def main(DATA_DIR:str,BATCH_SIZE:int,LEARNING_RATE:float,MAX_EPOCHS:int,NUM_WORK
         callbacks=[checkpoint_callback, early_stopping],
         accelerator="auto",
         devices="auto",
+        logger=logger,
         log_every_n_steps=10,
         fast_dev_run=0
     )
