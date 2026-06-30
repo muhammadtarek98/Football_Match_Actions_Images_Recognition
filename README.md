@@ -4,7 +4,7 @@ This project implements a deep learning model to recognize various actions in fo
 
 ## Dataset
 
-The dataset used for this project was created by **Muhammad** and is freely available on Kaggle.
+The dataset used for this project was created by **Me** and is freely available on Kaggle.
 
 *   **Source:** [Kaggle - Football Match Actions Dataset](https://www.kaggle.com/datasets/itarek898/football-match-dataset-first-version)
 *   **Classes:** The dataset currently supports the following action classes:
